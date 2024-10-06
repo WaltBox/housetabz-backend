@@ -4,7 +4,7 @@ const environments = {
   development: {
     port: process.env.PORT || 3000,
     nodeEnv: 'development',
-    databaseUrl: process.env.DATABASE_URL || 'postgres://postgres:6490Hill@localhost:5432/housetabz_db_dev',
+    databaseUrl: process.env.DATABASE_URL || 'postgres://postgres:6490Hill@localhost:5432/housetabz_db',
   },
   test: {
     port: process.env.TEST_PORT || 3001,

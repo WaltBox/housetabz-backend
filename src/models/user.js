@@ -44,5 +44,15 @@ module.exports = (sequelize, DataTypes) => {
     return false;
   };
 
+  // Define associations
+  User.associate = (models) => {
+    User.belongsTo(models.House, {
+      foreignKey: 'houseId',
+      as: 'house',
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+    });
+  };
+
   return User;
 };
