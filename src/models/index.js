@@ -1,9 +1,10 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const config = require('../config/config');
 
+// Pass the logging option from config to the Sequelize constructor
 const sequelize = new Sequelize(config.databaseUrl, {
   dialect: 'postgres',
-  logging: console.log,
+  logging: config.sequelize ? config.sequelize.logging : console.log, // Use the logging configuration if defined
 });
 
 // Import models and pass sequelize and DataTypes

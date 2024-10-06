@@ -9,7 +9,10 @@ const environments = {
   test: {
     port: process.env.TEST_PORT || 3001,
     nodeEnv: 'test',
-    databaseUrl: process.env.TEST_DATABASE_URL || 'postgres://postgres:6490Hill@localhost:5432/housetabz_db_test',
+    databaseUrl: process.env.TEST_DATABASE_URL || 'postgres://waltboxwell:6490Hill@localhost:5432/housetabz_db_test',
+    sequelize: {
+      logging: false, // Disable logging during tests
+    },
   },
   production: {
     port: process.env.PORT || 3000,
