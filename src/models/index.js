@@ -1,31 +1,22 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const config = require('../config/config');
 
-// Pass the logging option from config to the Sequelize constructor
 const sequelize = new Sequelize(config.databaseUrl, {
   dialect: 'postgres',
-  logging: config.sequelize ? config.sequelize.logging : console.log, // Use the logging configuration if defined
+  logging: config.sequelize ? config.sequelize.logging : console.log,
 });
 
-// Import models and pass sequelize and DataTypes
-const User = require('./user')(sequelize, DataTypes);
-const House = require('./house')(sequelize, DataTypes);
-const Partner = require('./partner')(sequelize, DataTypes);
-const ServicePlan = require('./servicePlan')(sequelize, DataTypes);
-const HouseService = require('./houseService')(sequelize, DataTypes);
-
-// Add models to the db object for exporting
 const db = {
   sequelize,
   Sequelize,
-  User,
-  House,
-  Partner,
-  ServicePlan,
-  HouseService,
+  User: require('./user')(sequelize, DataTypes),
+  House: require('./house')(sequelize, DataTypes),
+  Partner: require('./partner')(sequelize, DataTypes),
+  ServicePlan: require('./servicePlan')(sequelize, DataTypes),
+  HouseService: require('./houseService')(sequelize, DataTypes),
 };
 
-// Setup associations
+// Set up associations if they exist
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

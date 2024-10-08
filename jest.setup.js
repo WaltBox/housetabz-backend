@@ -1,16 +1,17 @@
 const { sequelize } = require('./src/models');
+const { execSync } = require('child_process');
 
-// Sync the test database before running any tests
+// Run migrations before running any tests
 beforeAll(async () => {
   try {
     await sequelize.authenticate();
     console.log('Connected to the test database successfully.');
-    
-    console.log('Attempting to sync the test database...');
-    await sequelize.sync({ force: true }); // This ensures that all tables are created before tests run
-    console.log('Database synced successfully.');
+
+    console.log('Running migrations...');
+    execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+    console.log('Migrations ran successfully.');
   } catch (error) {
-    console.error('Unable to connect to or sync the database:', error);
+    console.error('Unable to connect to or migrate the database:', error);
   }
 });
 

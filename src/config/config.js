@@ -11,7 +11,7 @@ const environments = {
     nodeEnv: 'test',
     databaseUrl: process.env.TEST_DATABASE_URL || 'postgres://waltboxwell:6490Hill@localhost:5432/housetabz_db_test',
     sequelize: {
-      logging: false, // Disable logging during tests
+      logging: false,
     },
   },
   production: {
