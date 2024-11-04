@@ -1,21 +1,17 @@
-// src/app.js
 const express = require('express');
 const cors = require('cors');
 const config = require('./config/config');
 const userRoutes = require('./routes/userRoutes');
 const houseRoutes = require('./routes/houseRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
-
-
 const serviceRequestBundleRoutes = require('./routes/serviceRequestBundleRoutes');
-const billRoutes = require('./routes/billRoutes');  // Bill routes
-const chargeRoutes = require('./routes/chargeRoutes');  // Charge routes
+const billRoutes = require('./routes/billRoutes');
+const chargeRoutes = require('./routes/chargeRoutes');
 const taskRoutes = require('./routes/taskRoutes');
-const rhythmOffersRoutes = require('./routes/rhythmOffersRoutes');  // Import rhythm offers route
-const rhythmOfferRequestRoutes = require('./routes/rhythmOfferRequestRoutes');  // Import rhythm offer requests route
+const rhythmOffersRoutes = require('./routes/rhythmOffersRoutes');
+const rhythmOfferRequestRoutes = require('./routes/rhythmOfferRequestRoutes');
 const sparklyRequestRoutes = require('./routes/sparklyRequestRoutes');
-
-const { sequelize } = require('./models');
+const sequelize = require('./config/database');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerConfig');
 const morgan = require('morgan');
@@ -31,33 +27,19 @@ app.use(morgan('dev'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
-app.use('/api/users', userRoutes);  // Users related routes
+app.use('/api/users', userRoutes);
 app.use('/api/houses', houseRoutes);
-
-app.use('/api/partners', partnerRoutes);  // Partners related routes
-
-
-
-app.use('/api', serviceRequestBundleRoutes);  // Service request bundles
-app.use('/api/tasks', taskRoutes);  // Tasks (service requests)
-
-app.use('/api/houses', billRoutes);  // For bills
-
-app.use('/api/users', chargeRoutes);  // For user charges
-
-app.use('/api/v2/rhythm-offers', rhythmOffersRoutes);  
+app.use('/api/partners', partnerRoutes);
+app.use('/api', serviceRequestBundleRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/houses', billRoutes);
+app.use('/api/users', chargeRoutes);
+app.use('/api/v2/rhythm-offers', rhythmOffersRoutes);
 app.use('/api/user', rhythmOfferRequestRoutes);
 app.use('/api/partners', sparklyRequestRoutes);
 
-
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to HouseTabz Backend!' });
-});
-
-app._router.stack.forEach(function(r) {
-  if (r.route && r.route.path) {
-    console.log(r.route.path);
-  }
 });
 
 // Error handling middleware
@@ -66,12 +48,29 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Sync database
-sequelize.sync({ force: true })
-  .then(() => {
+// Test database connection before syncing
+const initializeDatabase = async () => {
+  try {
+    // Test the connection
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+
+    // Sync the database (without force)
+    await sequelize.sync();
     console.log('Database synced');
+
+    // Start the server
     app.listen(config.port, () => {
       console.log(`Server running in ${config.nodeEnv} mode on port ${config.port}`);
     });
-  })
-  .catch(err => console.error('Unable to sync database:', err));
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+    process.exit(1);
+  }
+};
+
+
+// Initialize database and start server
+initializeDatabase();
+
+module.exports = app;
